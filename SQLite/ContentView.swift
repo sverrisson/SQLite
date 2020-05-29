@@ -16,12 +16,16 @@ struct ContentView: View {
             Text(movies.first!.title)
             
             Button(action: {
-                let movie = Movie(title: "Back to the Future", year: 1999)
-                let success = SQLite.shared.StoreMovie(movie)
+                let list = [
+                    Movie(title: "Citizen Kane", year: 1941),
+                    Movie(title: "The Godfather", year: 1972),
+                    Movie(title: "Casablanca", year: 1943)
+                ]
+                let success = SQLite.shared.StoreMovies(list)
                 print(success)
                 
             }, label: {
-                Text("Store Movie")
+                Text("Store Movies")
             })
         }
     }

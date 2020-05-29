@@ -20,32 +20,45 @@ class SQLite: ObservableObject {
     static var shared = SQLite()
     
     var dbHandle: OpaquePointer?
+    var insertRow: OpaquePointer?
     
     @Published var movies: [Movie] = [Movie(title: "jói", year: 2020)]
     
-    func StoreMovie(_ movie: Movie) -> Bool {
+    func StoreMovies(_ movies: [Movie]) -> Bool {
         guard dbHandle != nil else {
             os_log(.error, "DB pointer is nil")
             return false
         }
-        
+        guard movies.count > 0 else {
+            os_log(.info, "No movies to insert")
+            return true
+        }
         
         // Store a movie in db
-        var statement: OpaquePointer?
-        let row = "INSERT INTO Movie (title, year) VALUES (?, ?);"
-        if sqlite3_prepare(dbHandle, row, -1, &statement, nil) == SQLITE_OK {
-            sqlite3_bind_text(statement, 1, movie.title, -1, nil)
-            sqlite3_bind_int64(statement, 2, Int64(movie.year))
-            
-            guard sqlite3_step(statement) == SQLITE_DONE else {
-                os_log(.error, "Could not insert row data")
-                return false
+        let insertSQL = "INSERT INTO Movie (title, year) VALUES (?, ?);"
+        
+        // Prepare (compile) the statement
+        if sqlite3_prepare_v3(dbHandle, insertSQL, -1, 0, &insertRow, nil) == SQLITE_OK {
+            for (index, movie) in movies.enumerated() {
+                if index > 0 {
+                    
+                }
+                sqlite3_bind_text(insertRow, 1, movie.title, -1, nil)
+                sqlite3_bind_int64(insertRow, 2, Int64(movie.year))
+                
+                // Run the statement
+                let success = sqlite3_step(insertRow)
+                if success != SQLITE_DONE {
+                    os_log(.error, "Could not insert row data for %@", movie.title)
+                }
+                sqlite3_reset(insertRow)
             }
+            
         } else {
             os_log(.error, "Could not prepare for row data")
             return false
         }
-        sqlite3_finalize(statement)
+        
         return true
     }
     
@@ -55,21 +68,21 @@ class SQLite: ObservableObject {
         return nil
     }
     
-    // MARK: SQLite Setup
-    
+    // MARK: SQLite Setup and close down
     
     init() {
         // Open or set up database if needed
-        if let docsDirURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("SQLBooks").appendingPathExtension("sqlite"), let name = docsDirURL.absoluteString.cString(using: .ascii) {
-            let filename: UnsafePointer<Int8> = name.withUnsafeBufferPointer { $0.baseAddress! }
+        if let docsDirURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("SQLBooks").appendingPathExtension("sqlite") {
+            let filename = docsDirURL.absoluteString
             
-            var success = sqlite3_open(filename, &dbHandle)
+            // Open file or create
+            var success = sqlite3_open_v2(filename, &dbHandle, 0, nil)
             guard success == SQLITE_OK else {
                 if let handle = dbHandle {
                     sqlite3_close(handle)
                 }
                 dbHandle = nil
-                os_log(.error, "Could not open or create database: %@", filename)
+                os_log(.error, "Could not open or create database: %ld %@", success, filename)
                 return
             }
             
@@ -87,6 +100,15 @@ class SQLite: ObservableObject {
         }
     }
     
+    deinit {
+        // Destroy the statements
+        if (insertRow != nil) {sqlite3_finalize(insertRow)}
+        
+        // Close the database properly
+        if (dbHandle != nil) {sqlite3_close_v2(dbHandle)}
+        
+        os_log(.info, "Setup table finished")
+    }
 }
 
 
