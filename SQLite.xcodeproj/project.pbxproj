@@ -14,6 +14,7 @@
 		92DEA2D02480880600AA203B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 92DEA2CF2480880600AA203B /* Preview Assets.xcassets */; };
 		92DEA2D32480880600AA203B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92DEA2D12480880600AA203B /* LaunchScreen.storyboard */; };
 		92DEA2DE2480880700AA203B /* SQLiteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92DEA2DD2480880700AA203B /* SQLiteTests.swift */; };
+		92EB1BA024808B2D00B810D3 /* SQLite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EB1B9F24808B2D00B810D3 /* SQLite.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,8 @@
 		92DEA2D92480880700AA203B /* SQLiteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SQLiteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		92DEA2DD2480880700AA203B /* SQLiteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteTests.swift; sourceTree = "<group>"; };
 		92DEA2DF2480880700AA203B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		92EB1B9F24808B2D00B810D3 /* SQLite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLite.swift; sourceTree = "<group>"; };
+		92EB1BA224808F6900B810D3 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +67,7 @@
 				92DEA2C52480880600AA203B /* SQLite */,
 				92DEA2DC2480880700AA203B /* SQLiteTests */,
 				92DEA2C42480880600AA203B /* Products */,
+				92EB1BA124808F6900B810D3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -81,6 +85,7 @@
 			children = (
 				92DEA2C62480880600AA203B /* AppDelegate.swift */,
 				92DEA2C82480880600AA203B /* SceneDelegate.swift */,
+				92EB1B9F24808B2D00B810D3 /* SQLite.swift */,
 				92DEA2CA2480880600AA203B /* ContentView.swift */,
 				92DEA2CC2480880600AA203B /* Assets.xcassets */,
 				92DEA2D12480880600AA203B /* LaunchScreen.storyboard */,
@@ -105,6 +110,14 @@
 				92DEA2DF2480880700AA203B /* Info.plist */,
 			);
 			path = SQLiteTests;
+			sourceTree = "<group>";
+		};
+		92EB1BA124808F6900B810D3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				92EB1BA224808F6900B810D3 /* libsqlite3.tbd */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,6 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92DEA2C72480880600AA203B /* AppDelegate.swift in Sources */,
+				92EB1BA024808B2D00B810D3 /* SQLite.swift in Sources */,
 				92DEA2C92480880600AA203B /* SceneDelegate.swift in Sources */,
 				92DEA2CB2480880600AA203B /* ContentView.swift in Sources */,
 			);
