@@ -21,8 +21,8 @@ struct ContentView: View {
                     Movie(title: "The Godfather", year: 1972),
                     Movie(title: "Casablanca", year: 1943)
                 ]
-                let success = SQLite.shared.StoreMovies(list)
-                print(success)
+                let total = SQLite.shared.storeMovies(list)
+                print("Stored \(total) movies!")
                 
             }, label: {
                 Text("Store Movies")

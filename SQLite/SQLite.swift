@@ -24,16 +24,17 @@ class SQLite: ObservableObject {
     
     @Published var movies: [Movie] = [Movie(title: "jói", year: 2020)]
     
-    func StoreMovies(_ movies: [Movie]) -> Bool {
+    func storeMovies(_ movies: [Movie]) -> Int {
+        var counter = 0
         guard dbHandle != nil else {
             os_log(.error, "DB pointer is nil")
-            return false
+            return counter
         }
         guard movies.count > 0 else {
             os_log(.info, "No movies to insert")
-            return true
+            return counter
         }
-        
+                
         // Store a movie in db
         let insertSQL = "INSERT INTO Movie (title, year) VALUES (?, ?);"
         
@@ -51,18 +52,19 @@ class SQLite: ObservableObject {
                 if success != SQLITE_DONE {
                     os_log(.error, "Could not insert row data for %@", movie.title)
                 }
+                counter += 1
                 sqlite3_reset(insertRow)
             }
             
         } else {
             os_log(.error, "Could not prepare for row data")
-            return false
+            return counter
         }
         
-        return true
+        return counter
     }
     
-    func RetrieveMovie(_ movie: Movie) -> Movie? {
+    func retrieveMovie(_ movie: Movie) -> Movie? {
         // Retrieve a movie from db
         
         return nil
@@ -76,14 +78,13 @@ class SQLite: ObservableObject {
             let filename = docsDirURL.absoluteString
             
             // Open file or create
-            var success = sqlite3_open_v2(filename, &dbHandle, 0, nil)
-            guard success == SQLITE_OK else {
-                if let handle = dbHandle {
-                    sqlite3_close(handle)
+            var success = sqlite3_open_v2(filename, &dbHandle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_URI, nil)
+            if success != SQLITE_OK {
+                let errorCode = sqlite3_errcode(dbHandle)
+                if let errorString = sqlite3_errstr(errorCode) {
+                    let str = String(cString: errorString)
+                    os_log(.error, "Could not open or create database, error: %d, %@, path: %@", errorCode, str, filename)
                 }
-                dbHandle = nil
-                os_log(.error, "Could not open or create database: %ld %@", success, filename)
-                return
             }
             
             // Create table
