@@ -12,7 +12,18 @@ struct ContentView: View {
     @State var movies: [Movie]
     
     var body: some View {
-        Text(movies.first!.title)
+        VStack {
+            Text(movies.first!.title)
+            
+            Button(action: {
+                let movie = Movie(title: "Back to the Future", year: 1999)
+                let success = SQLite.shared.StoreMovie(movie)
+                print(success)
+                
+            }, label: {
+                Text("Store Movie")
+            })
+        }
     }
 }
 

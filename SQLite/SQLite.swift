@@ -19,28 +19,50 @@ struct Movie: Codable {
 class SQLite: ObservableObject {
     static var shared = SQLite()
     
+    var dbHandle: OpaquePointer?
+    
     @Published var movies: [Movie] = [Movie(title: "jói", year: 2020)]
     
     func StoreMovie(_ movie: Movie) -> Bool {
-        // Store a book in db
+        guard dbHandle != nil else {
+            os_log(.error, "DB pointer is nil")
+            return false
+        }
         
+        
+        // Store a movie in db
+        var statement: OpaquePointer?
+        let row = "INSERT INTO Movie (title, year) VALUES (?, ?);"
+        if sqlite3_prepare(dbHandle, row, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, movie.title, -1, nil)
+            sqlite3_bind_int64(statement, 2, Int64(movie.year))
+            
+            guard sqlite3_step(statement) == SQLITE_DONE else {
+                os_log(.error, "Could not insert row data")
+                return false
+            }
+        } else {
+            os_log(.error, "Could not prepare for row data")
+            return false
+        }
+        sqlite3_finalize(statement)
         return true
     }
     
     func RetrieveMovie(_ movie: Movie) -> Movie? {
-        // Retrieve a book from db
+        // Retrieve a movie from db
         
         return nil
     }
     
-    // MARK: SQLite
-    var dbHandle: OpaquePointer?
+    // MARK: SQLite Setup
+    
     
     init() {
         // Open or set up database if needed
         if let docsDirURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("SQLBooks").appendingPathExtension("sqlite"), let name = docsDirURL.absoluteString.cString(using: .ascii) {
             let filename: UnsafePointer<Int8> = name.withUnsafeBufferPointer { $0.baseAddress! }
-            var dbHandle: OpaquePointer?
+            
             var success = sqlite3_open(filename, &dbHandle)
             guard success == SQLITE_OK else {
                 if let handle = dbHandle {
@@ -61,8 +83,8 @@ class SQLite: ObservableObject {
                 sqlite3_free(errormsg)
                 return
             }
+            os_log(.info, "Setup table finished")
         }
-        
     }
     
 }
