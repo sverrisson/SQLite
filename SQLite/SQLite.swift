@@ -11,19 +11,27 @@ import SQLite3
 import Foundation
 import os.log
 
-struct Movie: Codable {
+struct Movie: Codable, CustomStringConvertible {
     var title: String
     var year: Int
+    
+    var description: String {
+        "Movie[\(title), \(year)]"
+    }
 }
 
 class SQLite: ObservableObject {
     static var shared = SQLite()
     
     var dbHandle: OpaquePointer?
-    var insertRow: OpaquePointer?
+    var storeRow: OpaquePointer?
+    var retrieveRow: OpaquePointer?
     
     @Published var movies: [Movie] = [Movie(title: "jói", year: 2020)]
     
+    /// Store Movies in the Movie table
+    /// - Parameter movies: [Movie] movie array to insert to db
+    /// - Returns: the number of movies inserted to the db
     func storeMovies(_ movies: [Movie]) -> Int {
         var counter = 0
         guard dbHandle != nil else {
@@ -34,40 +42,74 @@ class SQLite: ObservableObject {
             os_log(.info, "No movies to insert")
             return counter
         }
-                
-        // Store a movie in db
-        let insertSQL = "INSERT INTO Movie (title, year) VALUES (?, ?);"
         
         // Prepare (compile) the statement
-        if sqlite3_prepare_v3(dbHandle, insertSQL, -1, 0, &insertRow, nil) == SQLITE_OK {
-            for (index, movie) in movies.enumerated() {
-                if index > 0 {
-                    
-                }
-                sqlite3_bind_text(insertRow, 1, movie.title, -1, nil)
-                sqlite3_bind_int64(insertRow, 2, Int64(movie.year))
-                
-                // Run the statement
-                let success = sqlite3_step(insertRow)
-                if success != SQLITE_DONE {
-                    os_log(.error, "Could not insert row data for %@", movie.title)
-                }
-                counter += 1
-                sqlite3_reset(insertRow)
-            }
+        if (storeRow == nil) {
+            // Store a movie in db
+            let zSql = "INSERT INTO Movie (title, year) VALUES (?, ?);"
+            let nByte = Int32(zSql.count)
             
-        } else {
-            os_log(.error, "Could not prepare for row data")
-            return counter
+            if sqlite3_prepare_v2(dbHandle, zSql, nByte, &storeRow, nil) == SQLITE_OK {
+                os_log(.info, "Combiled store row data")
+            } else {
+                os_log(.error, "Could not prepare store for row data")
+                return counter
+            }
         }
         
+        for movie in movies {
+            sqlite3_bind_text(storeRow, 1, movie.title, -1, nil)
+            sqlite3_bind_int64(storeRow, 2, Int64(movie.year))
+            
+            // Run the statement
+            let success = sqlite3_step(storeRow)
+            if success != SQLITE_DONE {
+                os_log(.error, "Could not insert row data for %@", movie.title)
+            }
+            counter += 1
+            sqlite3_reset(storeRow)
+        }
         return counter
     }
     
-    func retrieveMovie(_ movie: Movie) -> Movie? {
-        // Retrieve a movie from db
+    /// Retrieve all movies from the Movie table
+    /// - Returns: [Movie] all the movies in the table
+    func retrieveMovies() -> [Movie] {
+        var movies: [Movie] = []
+        guard dbHandle != nil else {
+            os_log(.error, "DB pointer is nil")
+            return movies
+        }
         
-        return nil
+        // Prepare (compile) the statement
+        if (retrieveRow == nil) {
+            // Store a movie in db
+            let zSql = "SELECT M.title, M.year FROM Movie AS M;"
+            let nByte = Int32(zSql.count)
+            
+            if sqlite3_prepare_v2(dbHandle, zSql, nByte, &retrieveRow, nil) == SQLITE_OK {
+                os_log(.info, "Combiled retrieve row data")
+            } else {
+                os_log(.error, "Could not prepare for row data")
+                return movies
+            }
+        }
+        var success: Int32 = SQLITE_ROW
+        while success == SQLITE_ROW {
+            success = sqlite3_step(retrieveRow)
+            let titleSq = sqlite3_column_text(retrieveRow, 0)
+            let yearSq = sqlite3_column_int64(retrieveRow, 1)
+            
+            // Convert
+            if let titleSq = titleSq {
+                let title = String(cString: titleSq)
+                let year = Int(yearSq)
+                movies.append(Movie(title: title, year: year))
+            }
+        }
+        sqlite3_reset(retrieveRow)
+        
+        return movies
     }
     
     // MARK: SQLite Setup and close down
@@ -103,10 +145,11 @@ class SQLite: ObservableObject {
     
     deinit {
         // Destroy the statements
-        if (insertRow != nil) {sqlite3_finalize(insertRow)}
+        sqlite3_finalize(storeRow)
+        sqlite3_finalize(retrieveRow)
         
         // Close the database properly
-        if (dbHandle != nil) {sqlite3_close_v2(dbHandle)}
+        sqlite3_close(dbHandle)
         
         os_log(.info, "Setup table finished")
     }

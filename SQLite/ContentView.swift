@@ -12,7 +12,7 @@ struct ContentView: View {
     @State var movies: [Movie]
     
     var body: some View {
-        VStack {
+        VStack(alignment: .center, spacing: 16) {
             Text(movies.first!.title)
             
             Button(action: {
@@ -26,6 +26,15 @@ struct ContentView: View {
                 
             }, label: {
                 Text("Store Movies")
+            })
+            
+            Button(action: {
+                let movies = SQLite.shared.retrieveMovies()
+                print("Retrieved \(movies.count) movies!")
+                print(movies)
+                
+            }, label: {
+                Text("Retrive Movies")
             })
         }
     }
