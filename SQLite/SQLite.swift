@@ -193,7 +193,7 @@ class SQLite: ObservableObject {
     
     init() {
         // Open or set up database if needed
-        if let docsDirURL = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("SQLBooks").appendingPathExtension("sqlite") {
+        if let docsDirURL = try? FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("SQLBooks").appendingPathExtension("sqlite") {
             let filename = docsDirURL.absoluteString
             
             // Open file or create
@@ -216,7 +216,7 @@ class SQLite: ObservableObject {
                 return
             }
             os_log(.info, "ThreadSafe: %d", sqlite3_threadsafe())
-            os_log(.info, "Setup table finished")
+            os_log(.info, "Setup table finished: %@", filename)
         }
     }
     
