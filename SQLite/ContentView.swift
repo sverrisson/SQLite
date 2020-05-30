@@ -35,7 +35,7 @@ struct ContentView: View {
                 print(movies)
                 
             }, label: {
-                Text("Retrive Movies")
+                Text("Retrieve Movies")
             })
             
             Button(action: {
@@ -44,6 +44,13 @@ struct ContentView: View {
             }, label: {
                 Text("Delete All Movies")
                     .foregroundColor(.red)
+            })
+            
+            Button(action: {
+                print("Counted \(SQLite.shared.countRows()) movies!")
+                
+            }, label: {
+                Text("Total Movies")
             })
         }
     }
