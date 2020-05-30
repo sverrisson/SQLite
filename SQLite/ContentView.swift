@@ -28,13 +28,22 @@ struct ContentView: View {
                 Text("Store Movies")
             })
             
+            
             Button(action: {
                 let movies = SQLite.shared.retrieveMovies()
-                print("Retrieved \(movies.count) movies!")
+                print("Deleted: \(movies.count)")
                 print(movies)
                 
             }, label: {
                 Text("Retrive Movies")
+            })
+            
+            Button(action: {
+                print("Retrieved \(SQLite.shared.deleteAllRows()) movies!")
+                
+            }, label: {
+                Text("Delete All Movies")
+                    .foregroundColor(.red)
             })
         }
     }
