@@ -23,6 +23,9 @@ struct Movie: Codable, CustomStringConvertible {
 class SQLite: ObservableObject {
     static var shared = SQLite()
     
+    @Published
+    var movies: [Movie] = []
+    
     var database: OpaquePointer?
     var storeRowStmt: OpaquePointer?
     var deleteRowsStmt: OpaquePointer?
