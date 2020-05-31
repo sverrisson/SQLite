@@ -9,55 +9,82 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var movies: [Movie]
+    @EnvironmentObject var database: SQLite
     
-    var body: some View {
-        VStack(alignment: .center, spacing: 16) {
-            Text(movies.first!.title)
-            
+    var leadingView: some View {
+        HStack {
             Button(action: {
                 let list = [
+                    Movie(title: "Three Colors: Red", year: 1994),
+                    Movie(title: "Boyhood", year: 2014),
                     Movie(title: "Citizen Kane", year: 1941),
                     Movie(title: "The Godfather", year: 1972),
                     Movie(title: "Casablanca", year: 1943)
-                ]
-                let total = SQLite.shared.storeMovies(list)
+                    ].shuffled()
+                let upToMovies = (0..<list.count).randomElement()
+                let total = self.database.storeMovies(Array(list.prefix(upToMovies ?? 0)))
                 print("Stored \(total) movies!")
+                self.database.retrieveMovies()
                 
             }, label: {
-                Text("Store Movies")
+                Text("Store")
             })
             
+            Spacer()
             
             Button(action: {
-                let movies = SQLite.shared.retrieveMovies()
-                print("Deleted: \(movies.count)")
-                print(movies)
+                self.database.retrieveMovies()
+                print("Retrieved: \(self.database.movies.count)")
                 
             }, label: {
-                Text("Retrieve Movies")
+                Text("Retrieve")
             })
-            
+        }
+    }
+    
+    var trailingView: some View {
+        HStack {
             Button(action: {
-                print("Retrieved \(SQLite.shared.deleteAllRows()) movies!")
+                print("Deleted \(self.database.deleteAllRows()) movies!")
+                self.database.retrieveMovies()
                 
             }, label: {
-                Text("Delete All Movies")
+                Text("Delete All")
                     .foregroundColor(.red)
             })
             
+            Spacer()
+            
             Button(action: {
-                print("Counted \(SQLite.shared.countRows()) movies!")
+                print("Counted \(self.database.countRows()) movies!")
                 
             }, label: {
-                Text("Total Movies")
+                Text("Total")
             })
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            List(self.database.movies) { movie in
+                HStack {
+                    Text(movie.title)
+                    Text(String(movie.year))
+                }
+            }
+            .navigationBarTitle(Text("Movies"))
+            .navigationBarItems(leading: leadingView, trailing: trailingView)
+        }
+        .onAppear {
+            self.database.retrieveMovies()
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
+    static var db = SQLite("Movies")
     static var previews: some View {
-        ContentView(movies: SQLite.shared.movies)
+        ContentView()
+            .environmentObject(db)
     }
 }

@@ -11,7 +11,8 @@ import SQLite3
 import Foundation
 import os.log
 
-struct Movie: Codable, CustomStringConvertible {
+struct Movie: Codable, CustomStringConvertible, Identifiable {
+    let id: Int = Int.random(in: 0..<Int.max)
     var title: String
     var year: Int
     
@@ -20,19 +21,14 @@ struct Movie: Codable, CustomStringConvertible {
     }
 }
 
-class SQLite: ObservableObject {
-    static var shared = SQLite()
-    
-    @Published
-    var movies: [Movie] = []
+class SQLite: ObservableObject {    
+    @Published var movies: [Movie] = []
     
     var database: OpaquePointer?
     var storeRowStmt: OpaquePointer?
     var deleteRowsStmt: OpaquePointer?
     var retrieveRowStmt: OpaquePointer?
     var countStmt: OpaquePointer?
-    
-    @Published var movies: [Movie] = [Movie(title: "jói", year: 2020)]
     
     /// Total rows in the table
     /// - Returns: Int of numbers of rows
@@ -154,11 +150,11 @@ class SQLite: ObservableObject {
     
     /// Retrieve all movies from the Movie table
     /// - Returns: [Movie] all the movies in the table
-    func retrieveMovies() -> [Movie] {
+    func retrieveMovies() {
         var movies: [Movie] = []
         guard database != nil else {
             os_log(.error, "DB pointer is nil")
-            return movies
+            return
         }
         
         // Prepare (compile) the statement
@@ -171,7 +167,6 @@ class SQLite: ObservableObject {
                 os_log(.info, "Compiled retrieve row data")
             } else {
                 os_log(.error, "Could not prepare for row data")
-                return movies
             }
         }
         var success: Int32 = SQLITE_ROW
@@ -188,15 +183,15 @@ class SQLite: ObservableObject {
             }
         }
         sqlite3_reset(retrieveRowStmt)
-        
-        return movies
+        self.movies = movies
     }
     
     // MARK: SQLite Setup and close down
     
-    init() {
+    init(_ tableName: String) {
+  
         // Open or set up database if needed
-        if let docsDirURL = try? FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("SQLBooks").appendingPathExtension("sqlite") {
+        if let docsDirURL = try? FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(tableName).appendingPathExtension("sqlite") {
             let filename = docsDirURL.absoluteString
             
             // Open file or create

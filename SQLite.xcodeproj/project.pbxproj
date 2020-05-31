@@ -85,8 +85,8 @@
 			children = (
 				92DEA2C62480880600AA203B /* AppDelegate.swift */,
 				92DEA2C82480880600AA203B /* SceneDelegate.swift */,
-				92EB1B9F24808B2D00B810D3 /* SQLite.swift */,
 				92DEA2CA2480880600AA203B /* ContentView.swift */,
+				92EB1B9F24808B2D00B810D3 /* SQLite.swift */,
 				92DEA2CC2480880600AA203B /* Assets.xcassets */,
 				92DEA2D12480880600AA203B /* LaunchScreen.storyboard */,
 				92DEA2D42480880600AA203B /* Info.plist */,
