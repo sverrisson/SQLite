@@ -11,13 +11,28 @@ import SQLite3
 import Foundation
 import os.log
 
-struct Movie: Codable, CustomStringConvertible, Identifiable {
-    let id: Int = Int.random(in: 0..<Int.max)
+struct Movie: Codable, CustomStringConvertible, Identifiable, Equatable {
+    var uuid: UUID
     var title: String
     var year: Int
     
+    var id: UUID {
+        return uuid
+    }
+    
     var description: String {
-        "Movie[\(title), \(year)]"
+        "(\(title)|\(year)|\(uuid.uuidString))"
+    }
+    
+    init(title: String, year: Int, uuidString: String? = nil) {
+        self.title = title
+        self.year = year
+        if let uuidString = uuidString,
+            let uuid = UUID(uuidString: uuidString) {
+            self.uuid = uuid
+        } else {
+            self.uuid = UUID()
+        }
     }
 }
 
@@ -28,6 +43,7 @@ class SQLite: ObservableObject {
     var storeRowStmt: OpaquePointer?
     var deleteRowsStmt: OpaquePointer?
     var retrieveRowStmt: OpaquePointer?
+    var findMovieStmt: OpaquePointer?
     var countStmt: OpaquePointer?
     
     /// Total rows in the table
@@ -41,7 +57,7 @@ class SQLite: ObservableObject {
         // Prepare (compile) the statement
         if (countStmt == nil) {
             // Store a movie in db
-            let zSql = "SELECT COUNT(*) FROM Movie;"
+            let zSql = "SELECT COUNT(*) FROM Movies;"
             let nByte = Int32(zSql.count)
             
             if sqlite3_prepare_v2(database, zSql, nByte, &countStmt, nil) == SQLITE_OK {
@@ -80,7 +96,7 @@ class SQLite: ObservableObject {
         // Prepare (compile) the statement
         if (deleteRowsStmt == nil) {
             // Store a movie in db
-            let zSql = "DELETE FROM Movie;"
+            let zSql = "DELETE FROM Movies;"
             let nByte = Int32(zSql.count)
             
             if sqlite3_prepare_v2(database, zSql, nByte, &deleteRowsStmt, nil) == SQLITE_OK {
@@ -101,7 +117,7 @@ class SQLite: ObservableObject {
         return true
     }
     
-    /// Store Movies in the Movie table
+    /// Store Movies in the Movies table
     /// - Parameter movies: [Movie] movie array to insert to db
     /// - Returns: the number of movies inserted to the db
     func storeMovies(_ movies: [Movie]) -> Int {
@@ -118,7 +134,7 @@ class SQLite: ObservableObject {
         // Prepare (compile) the statement
         if (storeRowStmt == nil) {
             // Store a movie in db
-            let zSql = "INSERT INTO Movie (title, year) VALUES (?, ?);"
+            let zSql = "INSERT INTO Movies VALUES (?, ?, ?);"
             let nByte = Int32(zSql.count)
             
             if sqlite3_prepare_v2(database, zSql, nByte, &storeRowStmt, nil) == SQLITE_OK {
@@ -130,8 +146,9 @@ class SQLite: ObservableObject {
         }
         
         for movie in movies {
-            sqlite3_bind_text(storeRowStmt, 1, movie.title, -1, nil)
-            sqlite3_bind_int64(storeRowStmt, 2, Int64(movie.year))
+            storeString(storeRowStmt, column: 1, string: movie.uuid.uuidString)
+            storeString(storeRowStmt, column: 2, string: movie.title)
+            sqlite3_bind_int64(storeRowStmt, 3, Int64(movie.year))
             
             // Run the statement
             var success = sqlite3_step(storeRowStmt)
@@ -148,6 +165,83 @@ class SQLite: ObservableObject {
         return counter
     }
     
+    func columnType(_ type: Int32) -> String {
+        switch type {
+            
+        case SQLITE_INTEGER:
+            return "Integer"
+            
+        case SQLITE_FLOAT:
+            return "Double"
+            
+        case SQLITE_BLOB:
+            return "BLOB"
+            
+        case SQLITE_NULL:
+            return "Null"
+            
+        case SQLITE_TEXT:
+            return "Text"
+            
+        default:
+            return "Unknown"
+        }
+    }
+    
+    //    64-bit signed integer
+    //    64-bit IEEE floating point number
+    //    string
+    //    BLOB
+    //    NULL
+    func retriveString(_ statement: OpaquePointer?, column: Int32) -> String {
+        os_log(.info, "Retrive String")
+        let columnType = sqlite3_column_type(statement, column)
+        let columnName = sqlite3_column_name(statement, column)
+        guard columnType == SQLITE_TEXT else {
+            os_log(.error, "Incorrect type: %d %@", columnType, self.columnType(column))
+            return ""
+        }
+        let bytes = sqlite3_column_bytes(statement, column)
+        if let text = sqlite3_column_text(statement, column) {
+            let string = String(cString: text)
+            if string.count != bytes {
+                os_log(.error, "Wrong string: %@, should length: %d, but is: %d", string, bytes, string.count)
+            }
+            if let columnName = columnName, let cName = String(cString: columnName, encoding: .utf8) {
+                os_log(.info, "Name: %@, column: %d, value: %ld", cName, column, string)
+            }
+            return string
+        }
+        return ""
+    }
+    
+    func retriveInt(_ statement: OpaquePointer?, column: Int32) -> Int {
+        os_log(.info, "Retrive Int")
+        let columnType = sqlite3_column_type(statement, column)
+        let columnName = sqlite3_column_name(statement, column)
+        guard columnType == SQLITE_INTEGER else {
+            os_log(.error, "Incorrect type: %d %@", columnType, self.columnType(column))
+            return 0
+        }
+        let bytes = sqlite3_column_bytes(statement, column)
+        let value = sqlite3_column_int64(statement, column)
+        os_log(.info, "Byte length: %d", bytes)
+        let typeBytes = MemoryLayout<Int>.size
+        guard bytes <= typeBytes else {
+            os_log(.error, "Wrong byte length, should be equal or less than: %d, but is: %d", typeBytes, bytes)
+            return 0
+        }
+        if let columnName = columnName, let cName = String(cString: columnName, encoding: .utf8) {
+            os_log(.info, "Name: %@, column: %d, value: %ld", cName, column, value)
+        }
+        return Int(value)
+    }
+    
+    func storeString(_ statement: OpaquePointer?, column: Int32, string: String) {
+        sqlite3_bind_text(statement, column, string, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+        os_log(.info, "Stored value: %ld", string)
+    }
+    
     /// Retrieve all movies from the Movie table
     /// - Returns: [Movie] all the movies in the table
     func retrieveMovies() {
@@ -160,7 +254,7 @@ class SQLite: ObservableObject {
         // Prepare (compile) the statement
         if (retrieveRowStmt == nil) {
             // Store a movie in db
-            let zSql = "SELECT M.title, M.year FROM Movie AS M;"
+            let zSql = "SELECT * FROM Movies;"
             let nByte = Int32(zSql.count)
             
             if sqlite3_prepare_v2(database, zSql, nByte, &retrieveRowStmt, nil) == SQLITE_OK {
@@ -170,28 +264,75 @@ class SQLite: ObservableObject {
             }
         }
         var success: Int32 = SQLITE_ROW
-        while success == SQLITE_ROW {
+        while (success == SQLITE_ROW) {
             success = sqlite3_step(retrieveRowStmt)
-            let titleSq = sqlite3_column_text(retrieveRowStmt, 0)
-            let yearSq = sqlite3_column_int64(retrieveRowStmt, 1)
-            
-            // Convert
-            if let titleSq = titleSq {
-                let title = String(cString: titleSq)
-                let year = Int(yearSq)
-                movies.append(Movie(title: title, year: year))
+            guard sqlite3_data_count(retrieveRowStmt) == 3 else {
+                os_log(.info, "Number of data returned: %d", sqlite3_data_count(retrieveRowStmt))
+                continue
             }
+            let uuidString = retriveString(retrieveRowStmt, column: 0)
+            let title = retriveString(retrieveRowStmt, column: 1)
+            let year = retriveInt(retrieveRowStmt, column: 2)
+            
+            let movie = Movie(title: title, year: year, uuidString: uuidString)
+            movies.append(movie)
         }
         sqlite3_reset(retrieveRowStmt)
         self.movies = movies
     }
     
+    /// Find movies from the Movie table for a given year
+    /// - Parameter year: Int the year for the movie
+    /// - Returns: [Movie] all movies for that year
+    func findMovieFor(year: Int) -> [Movie] {
+        var movies: [Movie] = []
+        guard database != nil else {
+            os_log(.error, "DB pointer is nil")
+            return []
+        }
+        
+        // Prepare (compile) the statement
+        if (findMovieStmt == nil) {
+            // Store a movie in db
+            let zSql = "SELECT * FROM Movies WHERE year = ?;"
+            let nByte = Int32(zSql.count)
+            
+            if sqlite3_prepare_v2(database, zSql, nByte, &findMovieStmt, nil) == SQLITE_OK {
+                os_log(.info, "Compiled find row data")
+            } else {
+                os_log(.error, "Could not prepare find")
+            }
+        }
+        var success = sqlite3_bind_int64(findMovieStmt, 1, Int64(year))
+        success = SQLITE_ROW
+        while (success == SQLITE_ROW) {
+            success = sqlite3_step(findMovieStmt)
+            guard sqlite3_data_count(findMovieStmt) == 3 else {
+                os_log(.info, "Number of data returned: %d", sqlite3_data_count(findMovieStmt))
+                continue
+            }
+            let uuidString = retriveString(findMovieStmt, column: 0)
+            let title = retriveString(findMovieStmt, column: 1)
+            let year = retriveInt(findMovieStmt, column: 2)
+            
+            let movie = Movie(title: title, year: year, uuidString: uuidString)
+            movies.append(movie)
+        }
+        sqlite3_reset(findMovieStmt)
+        return movies
+    }
+    
     // MARK: SQLite Setup and close down
     
+    private var tableName: String
+    
     init(_ tableName: String) {
-  
+        self.tableName = tableName
+    }
+        
+    func setupDatabase() {
         // Open or set up database if needed
-        if let docsDirURL = try? FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(tableName).appendingPathExtension("sqlite") {
+        if let docsDirURL = try? FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(tableName).appendingPathExtension("db") {
             let filename = docsDirURL.absoluteString
             
             // Open file or create
@@ -204,30 +345,40 @@ class SQLite: ObservableObject {
             }
             
             // Create table
-            let sqlStatement = "CREATE TABLE IF NOT EXISTS Movie(title VARCHAR(25), year INT);"
+            let sqlStatement = "CREATE TABLE IF NOT EXISTS Movies(uuid CHAR(36) NOT NULL, title VARCHAR(25), year INT, PRIMARY KEY (uuid), UNIQUE(uuid));"  //NOT NULL , UNIQUE(uuid)
             var statement: UnsafeMutableRawPointer!
             var errormsg: UnsafeMutablePointer<Int8>?
             success = sqlite3_exec(database, sqlStatement, nil, &statement, &errormsg)
             guard success == SQLITE_OK else {
-                os_log(.error, "Could not create table, Error: %@", errormsg.debugDescription)
+                os_log(.error, "Could not create table")
+                if let errormsg = errormsg {
+                    os_log(.error, "Error: %@", String(cString: errormsg))
+                }
                 sqlite3_free(errormsg)
                 return
             }
             os_log(.info, "ThreadSafe: %d", sqlite3_threadsafe())
-            os_log(.info, "Setup table finished: %@", filename)
+            os_log(.info, "Setup table finished, path: %@", filename)
+            
+            // Compile all sql requests
+            
         }
     }
     
-    deinit {
+    func closeDatabase() {
         // Destroy the statements
+        os_log(.info, "Deinit")
         sqlite3_finalize(storeRowStmt)
         sqlite3_finalize(retrieveRowStmt)
         sqlite3_finalize(deleteRowsStmt)
         
         // Close the database properly
         sqlite3_close(database)
-        
-        os_log(.info, "Setup table finished")
+        os_log(.info, "Database closed")
+    }
+    
+    deinit {
+        self.closeDatabase()
     }
 }
 
