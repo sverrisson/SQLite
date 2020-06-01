@@ -134,7 +134,7 @@ class SQLite: ObservableObject {
         // Prepare (compile) the statement
         if (storeRowStmt == nil) {
             // Store a movie in db
-            let zSql = "INSERT INTO Movies VALUES (?, ?, ?);"
+            let zSql = "INSERT INTO Movies (uuid, title, year) VALUES (?, ?, ?);"
             let nByte = Int32(zSql.count)
             
             if sqlite3_prepare_v2(database, zSql, nByte, &storeRowStmt, nil) == SQLITE_OK {
@@ -254,7 +254,7 @@ class SQLite: ObservableObject {
         // Prepare (compile) the statement
         if (retrieveRowStmt == nil) {
             // Store a movie in db
-            let zSql = "SELECT * FROM Movies;"
+            let zSql = "SELECT uuid, title, year FROM Movies;"
             let nByte = Int32(zSql.count)
             
             if sqlite3_prepare_v2(database, zSql, nByte, &retrieveRowStmt, nil) == SQLITE_OK {
@@ -294,7 +294,7 @@ class SQLite: ObservableObject {
         // Prepare (compile) the statement
         if (findMovieStmt == nil) {
             // Store a movie in db
-            let zSql = "SELECT * FROM Movies WHERE year = ?;"
+            let zSql = "SELECT uuid, title, year FROM Movies WHERE year = ? ORDER BY title LIMIT 30 OFFSET 0;"
             let nByte = Int32(zSql.count)
             
             if sqlite3_prepare_v2(database, zSql, nByte, &findMovieStmt, nil) == SQLITE_OK {
@@ -345,7 +345,7 @@ class SQLite: ObservableObject {
             }
             
             // Create table
-            let sqlStatement = "CREATE TABLE IF NOT EXISTS Movies(uuid CHAR(36) NOT NULL, title VARCHAR(25), year INT, PRIMARY KEY (uuid), UNIQUE(uuid));"  //NOT NULL , UNIQUE(uuid)
+            let sqlStatement = "CREATE TABLE IF NOT EXISTS Movies(uuid CHAR(36) NOT NULL UNIQUE, title VARCHAR(25), year INT, id INTEGER PRIMARY KEY AUTOINCREMENT);"  //NOT NULL , UNIQUE(uuid)
             var statement: UnsafeMutableRawPointer!
             var errormsg: UnsafeMutablePointer<Int8>?
             success = sqlite3_exec(database, sqlStatement, nil, &statement, &errormsg)
@@ -371,6 +371,9 @@ class SQLite: ObservableObject {
         sqlite3_finalize(storeRowStmt)
         sqlite3_finalize(retrieveRowStmt)
         sqlite3_finalize(deleteRowsStmt)
+        storeRowStmt = nil;
+        retrieveRowStmt = nil;
+        deleteRowsStmt = nil;
         
         // Close the database properly
         sqlite3_close(database)
