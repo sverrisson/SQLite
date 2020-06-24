@@ -7,9 +7,10 @@
 //
 
 import SwiftUI
+import SQLiteNano
 
 struct ContentView: View {
-    @EnvironmentObject var database: SQLite
+    @EnvironmentObject var database: SQLiteNano
     
     var trailingView: some View {
         HStack {
@@ -52,13 +53,7 @@ struct ContentView: View {
                 Text("Delete All")
                     .foregroundColor(.red)
             })
-            .onAppear {
-                self.database.setupDatabase()
-                self.database.retrieveMovies()
-            }
-            .onDisappear() {
-                self.database.closeDatabase()
-            }
+            
 //
 //            Spacer()
 //
@@ -74,28 +69,35 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List(self.database.movies) { movie in
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text(movie.title)
-                        Spacer()
-                        Text("Year:")
+                NavigationLink(destination: DetailView(movie: movie)) {
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text(movie.title)
+                            Spacer()
+                            Text("Year:")
+                                .font(.caption)
+                            Text(String(movie.year))
+                        }.font(.headline)
+                        
+                        Text("\(movie.id)")
                             .font(.caption)
-                        Text(String(movie.year))
-                    }.font(.headline)
-                    
-                    Text("\(movie.id)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             .navigationBarTitle(Text("Movies \(self.database.movies.count)"))
             .navigationBarItems(leading: leadingView, trailing: trailingView)
+            
+            DetailView(movie: database.movies.first ?? Movie(title: "Casablanca", year: 1943))
+        }
+        .onAppear {
+            self.database.retrieveMovies()
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
-    static var db = SQLite("Movies")
+    static var db = SQLiteNano("Movies")
     static var previews: some View {
         ContentView()
             .environmentObject(db)

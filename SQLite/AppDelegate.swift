@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SQLiteNano
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

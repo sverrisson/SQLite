@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SQLiteNano",
+        "repositoryURL": "https://github.com/sverrisson/SQLiteNano.git",
+        "state": {
+          "branch": "master",
+          "revision": "db67dd1dda931e0d1951dc92e9f1f421d26ec486",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

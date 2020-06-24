@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,7 +14,8 @@
 		92DEA2D02480880600AA203B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 92DEA2CF2480880600AA203B /* Preview Assets.xcassets */; };
 		92DEA2D32480880600AA203B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92DEA2D12480880600AA203B /* LaunchScreen.storyboard */; };
 		92DEA2DE2480880700AA203B /* SQLiteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92DEA2DD2480880700AA203B /* SQLiteTests.swift */; };
-		92EB1BA024808B2D00B810D3 /* SQLite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EB1B9F24808B2D00B810D3 /* SQLite.swift */; };
+		92E475CE2489A7F0008B7A8D /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E475CD2489A7F0008B7A8D /* DetailView.swift */; };
+		92E475D12489B12F008B7A8D /* SQLiteNano in Frameworks */ = {isa = PBXBuildFile; productRef = 92E475D02489B12F008B7A8D /* SQLiteNano */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,7 +29,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		92DEA2C32480880600AA203B /* SQLite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SQLite.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9264C30A24A2E68900B56474 /* SQLiteNano */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SQLiteNano; path = ../../../../Desktop/SQLiteNano; sourceTree = "<group>"; };
+		92DEA2C32480880600AA203B /* SQLiteTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SQLiteTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92DEA2C62480880600AA203B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		92DEA2C82480880600AA203B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		92DEA2CA2480880600AA203B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -36,10 +38,10 @@
 		92DEA2CF2480880600AA203B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		92DEA2D22480880600AA203B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		92DEA2D42480880600AA203B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		92DEA2D92480880700AA203B /* SQLiteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SQLiteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		92DEA2D92480880700AA203B /* SQLiteTestAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SQLiteTestAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		92DEA2DD2480880700AA203B /* SQLiteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteTests.swift; sourceTree = "<group>"; };
 		92DEA2DF2480880700AA203B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		92EB1B9F24808B2D00B810D3 /* SQLite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLite.swift; sourceTree = "<group>"; };
+		92E475CD2489A7F0008B7A8D /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		92EB1BA224808F6900B810D3 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -48,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92E475D12489B12F008B7A8D /* SQLiteNano in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +67,7 @@
 		92DEA2BA2480880600AA203B = {
 			isa = PBXGroup;
 			children = (
+				9264C30A24A2E68900B56474 /* SQLiteNano */,
 				92DEA2C52480880600AA203B /* SQLite */,
 				92DEA2DC2480880700AA203B /* SQLiteTests */,
 				92DEA2C42480880600AA203B /* Products */,
@@ -74,8 +78,8 @@
 		92DEA2C42480880600AA203B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				92DEA2C32480880600AA203B /* SQLite.app */,
-				92DEA2D92480880700AA203B /* SQLiteTests.xctest */,
+				92DEA2C32480880600AA203B /* SQLiteTestApp.app */,
+				92DEA2D92480880700AA203B /* SQLiteTestAppTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -86,7 +90,7 @@
 				92DEA2C62480880600AA203B /* AppDelegate.swift */,
 				92DEA2C82480880600AA203B /* SceneDelegate.swift */,
 				92DEA2CA2480880600AA203B /* ContentView.swift */,
-				92EB1B9F24808B2D00B810D3 /* SQLite.swift */,
+				92E475CD2489A7F0008B7A8D /* DetailView.swift */,
 				92DEA2CC2480880600AA203B /* Assets.xcassets */,
 				92DEA2D12480880600AA203B /* LaunchScreen.storyboard */,
 				92DEA2D42480880600AA203B /* Info.plist */,
@@ -123,9 +127,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		92DEA2C22480880600AA203B /* SQLite */ = {
+		92DEA2C22480880600AA203B /* SQLiteTestApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 92DEA2E22480880700AA203B /* Build configuration list for PBXNativeTarget "SQLite" */;
+			buildConfigurationList = 92DEA2E22480880700AA203B /* Build configuration list for PBXNativeTarget "SQLiteTestApp" */;
 			buildPhases = (
 				92DEA2BF2480880600AA203B /* Sources */,
 				92DEA2C02480880600AA203B /* Frameworks */,
@@ -135,14 +139,17 @@
 			);
 			dependencies = (
 			);
-			name = SQLite;
+			name = SQLiteTestApp;
+			packageProductDependencies = (
+				92E475D02489B12F008B7A8D /* SQLiteNano */,
+			);
 			productName = SQLite;
-			productReference = 92DEA2C32480880600AA203B /* SQLite.app */;
+			productReference = 92DEA2C32480880600AA203B /* SQLiteTestApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		92DEA2D82480880700AA203B /* SQLiteTests */ = {
+		92DEA2D82480880700AA203B /* SQLiteTestAppTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 92DEA2E52480880700AA203B /* Build configuration list for PBXNativeTarget "SQLiteTests" */;
+			buildConfigurationList = 92DEA2E52480880700AA203B /* Build configuration list for PBXNativeTarget "SQLiteTestAppTests" */;
 			buildPhases = (
 				92DEA2D52480880700AA203B /* Sources */,
 				92DEA2D62480880700AA203B /* Frameworks */,
@@ -153,9 +160,9 @@
 			dependencies = (
 				92DEA2DB2480880700AA203B /* PBXTargetDependency */,
 			);
-			name = SQLiteTests;
+			name = SQLiteTestAppTests;
 			productName = SQLiteTests;
-			productReference = 92DEA2D92480880700AA203B /* SQLiteTests.xctest */;
+			productReference = 92DEA2D92480880700AA203B /* SQLiteTestAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -165,7 +172,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1150;
-				LastUpgradeCheck = 1150;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Hannes Sverrisson";
 				TargetAttributes = {
 					92DEA2C22480880600AA203B = {
@@ -177,7 +184,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 92DEA2BE2480880600AA203B /* Build configuration list for PBXProject "SQLite" */;
+			buildConfigurationList = 92DEA2BE2480880600AA203B /* Build configuration list for PBXProject "SQLiteTestApp" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -186,12 +193,15 @@
 				Base,
 			);
 			mainGroup = 92DEA2BA2480880600AA203B;
+			packageReferences = (
+				92E475CF2489B12F008B7A8D /* XCRemoteSwiftPackageReference "SQLiteNano" */,
+			);
 			productRefGroup = 92DEA2C42480880600AA203B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				92DEA2C22480880600AA203B /* SQLite */,
-				92DEA2D82480880700AA203B /* SQLiteTests */,
+				92DEA2C22480880600AA203B /* SQLiteTestApp */,
+				92DEA2D82480880700AA203B /* SQLiteTestAppTests */,
 			);
 		};
 /* End PBXProject section */
@@ -222,9 +232,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				92DEA2C72480880600AA203B /* AppDelegate.swift in Sources */,
-				92EB1BA024808B2D00B810D3 /* SQLite.swift in Sources */,
 				92DEA2C92480880600AA203B /* SceneDelegate.swift in Sources */,
 				92DEA2CB2480880600AA203B /* ContentView.swift in Sources */,
+				92E475CE2489A7F0008B7A8D /* DetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,7 +251,7 @@
 /* Begin PBXTargetDependency section */
 		92DEA2DB2480880700AA203B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 92DEA2C22480880600AA203B /* SQLite */;
+			target = 92DEA2C22480880600AA203B /* SQLiteTestApp */;
 			targetProxy = 92DEA2DA2480880700AA203B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -284,6 +294,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -344,6 +355,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -385,7 +397,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Cuehf.SQLite;
+				PRODUCT_BUNDLE_IDENTIFIER = Cuehf.SQLiteTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -405,7 +417,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Cuehf.SQLite;
+				PRODUCT_BUNDLE_IDENTIFIER = Cuehf.SQLiteTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -430,7 +442,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SQLite.app/SQLite";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SQLiteTestApp.app/SQLiteTestApp";
 			};
 			name = Debug;
 		};
@@ -452,14 +464,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SQLite.app/SQLite";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SQLiteTestApp.app/SQLiteTestApp";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		92DEA2BE2480880600AA203B /* Build configuration list for PBXProject "SQLite" */ = {
+		92DEA2BE2480880600AA203B /* Build configuration list for PBXProject "SQLiteTestApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				92DEA2E02480880700AA203B /* Debug */,
@@ -468,7 +480,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		92DEA2E22480880700AA203B /* Build configuration list for PBXNativeTarget "SQLite" */ = {
+		92DEA2E22480880700AA203B /* Build configuration list for PBXNativeTarget "SQLiteTestApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				92DEA2E32480880700AA203B /* Debug */,
@@ -477,7 +489,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		92DEA2E52480880700AA203B /* Build configuration list for PBXNativeTarget "SQLiteTests" */ = {
+		92DEA2E52480880700AA203B /* Build configuration list for PBXNativeTarget "SQLiteTestAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				92DEA2E62480880700AA203B /* Debug */,
@@ -487,6 +499,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		92E475CF2489B12F008B7A8D /* XCRemoteSwiftPackageReference "SQLiteNano" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sverrisson/SQLiteNano.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		92E475D02489B12F008B7A8D /* SQLiteNano */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 92E475CF2489B12F008B7A8D /* XCRemoteSwiftPackageReference "SQLiteNano" */;
+			productName = SQLiteNano;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 92DEA2BB2480880600AA203B /* Project object */;
 }
